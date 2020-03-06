@@ -1,0 +1,190 @@
+using System;
+
+namespace ConsoleApp1
+{
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            char[,] tabla;
+            int elementos_en_linea;
+            char turno;
+            int contador = 0;
+
+            InicializarPartida(out tabla, out elementos_en_linea, out turno);
+
+            do {
+                CambiarTurno(ref turno);
+                PintarTabla(tabla);
+                RealizarJugada(tabla, turno);
+
+                ++contador;
+                
+            } while ( !ComprobarVictoria(tabla, turno, elementos_en_linea) && contador < tabla.Length );
+        }
+
+        static bool ComprobarVictoria(char[,] tabla, char turno, int elementos_en_linea) {
+
+            bool hay_victoria = false;
+           
+            //COMPROBAR HORIZONTALES
+                for (int i = 0; i < tabla.GetLength(0) && !hay_victoria; ++i) {
+                    for (int j = 0, n_elementos = 0; j < tabla.GetLength(1) && !hay_victoria; ++j) {
+                            if (tabla[i, j] == turno)
+                            {
+                                ++n_elementos;
+                            }
+                            else {
+                                n_elementos = 0;
+                            }
+
+                            if (n_elementos == elementos_en_linea) {
+                                hay_victoria = true;
+                            }
+                    }
+                }
+
+
+            if (hay_victoria)
+                return hay_victoria;
+
+            //COMPROBAR VERTICALES
+            for (int j = 0; j < tabla.GetLength(1) && !hay_victoria; ++j)
+            {
+                for (int i = 0, n_elementos = 0; i < tabla.GetLength(0) && !hay_victoria; ++i)
+                {
+                    if (tabla[i, j] == turno)
+                    {
+                        ++n_elementos;
+                    }
+                    else
+                    {
+                        n_elementos = 0;
+                    }
+
+                    if (n_elementos == elementos_en_linea)
+                    {
+                        hay_victoria = true;
+                    }
+                }
+            }
+
+
+            //COMPROBAR DIAGONAL
+
+            for (int j = 0; j < tabla.GetLength(1) && !hay_victoria; ++j)
+            {
+                for (int i = 0, n_elementos = 0; i < tabla.GetLength(0) && !hay_victoria; ++i)
+                {
+                    if (tabla[i, j] == turno)
+                    {
+                        ++n_elementos;
+                    }
+                    else
+                    {
+                        n_elementos = 0;
+                    }
+
+                    if (n_elementos == elementos_en_linea)
+                    {
+                        hay_victoria = true;
+                    }
+                }
+            }
+
+            return hay_victoria;
+        }
+
+        static void CambiarTurno(ref char turno) {
+            if (turno == 'O')
+                turno = 'X';
+            else
+                turno = 'O';
+        }
+
+        static void RealizarJugada(char[,] tabla, char turno) {
+
+            int fila, columna;
+            bool ocupada = false;
+            Console.WriteLine("Es el turno de '" + turno + "': ");
+            do {
+                Console.Write("Inserta la fila: ");
+                while (!int.TryParse(Console.ReadLine(), out fila) || fila < 0 || fila >= tabla.GetLength(0))
+                {
+                    Console.Write("Valor incorrecto, inserte la fila de nuevo: ");
+                }
+
+                Console.Write("Inserta la columna: ");
+                while (!int.TryParse(Console.ReadLine(), out columna) || columna < 0 || columna >= tabla.GetLength(1))
+                {
+                    Console.Write("Valor incorrecto, inserte la columna de nuevo: ");
+                }
+
+                if (  ocupada = ComprobarCasilla(tabla, fila, columna)  ) {
+                    Console.WriteLine("Casilla ocupada, inserta de nuevo");
+                }
+
+            } while(ocupada);
+
+            tabla[fila, columna] = turno;
+
+        }
+
+
+        static bool ComprobarCasilla(char[,] tabla, int fila, int columna) {
+            bool ocupada = false;
+
+            if (tabla[fila, columna] != '_')
+                ocupada = true;
+
+            return ocupada;
+
+        }
+
+        static void PintarTabla(char[,] tabla)
+        {
+            Console.Clear();
+            Console.Write("\n");
+            
+            for (int i = 0; i < tabla.GetLength(0); ++i)
+            {
+                for (int j = 0; j < tabla.GetLength(1); ++j)
+                {
+                    Console.Write("{0,5}", tabla[i, j]);
+                }
+                Console.WriteLine("\n");
+            }
+        }
+
+        static void InicializarPartida(out char[,] tabla, out int elementos_en_linea, out char turno)
+        {
+            int filas = 3, columnas = 3;
+            elementos_en_linea = 3;
+            turno = 'O';
+
+
+            /* Console.Write("Inserta el nº de filas: ");
+             while (!int.TryParse(Console.ReadLine(), out filas) || filas < 1)
+             {
+                 Console.Write("Valor incorrecto, inserte las filas de nuevo: ");
+             }
+
+             Console.Write("Inserta el nº de columnas: ");
+             while (!int.TryParse(Console.ReadLine(), out columnas) || columnas < 1)
+             {
+                 Console.Write("Valor incorrecto, inserte las ficolumnas de nuevo: ");
+             }
+             */
+            tabla = new char[filas, columnas];
+            //lleno la tabla de espacios en blanco
+            for (int i = 0; i < tabla.GetLength(0); ++i)
+            {
+                for (int j = 0; j < tabla.GetLength(1); ++j)
+                {
+                    tabla[i, j] = '_';
+                }
+            }
+        }
+
+    }
+}
